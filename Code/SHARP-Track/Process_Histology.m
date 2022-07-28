@@ -102,8 +102,8 @@ while size(findobj(histology_figure))>0
 end
 
 %check that all processed files have been created 
-procFileList=dir(folder_processed_images);
-file2ProcIdx=find(~cellfun(@(fName) any(contains({procFileList.name},fName(1:end-4))) ,image_file_names));
+procDirFileList=dir(folder_processed_images);
+file2ProcIdx=find(~cellfun(@(fName) any(contains({procDirFileList.name},fName(1:end-4))) ,image_file_names));
 for fileNum=1:length(file2ProcIdx)
     userParams.file_num=file2ProcIdx(fileNum);
     AdjustHistologyImage(userParams,use_ds_image); 
@@ -124,7 +124,23 @@ close all
 % note -- presssing left or right arrow saves the modified image, so be
 % sure to do this even after modifying the last slice in the folder
 
-slice_figure = figure('Name','Slice Viewer');
+slice_figure = figure('Name','Slice Viewer', 'NumberTitle', 'off', 'color', 'k'); 
 SliceFlipper(slice_figure, folder_processed_images, atlas_reference_size)
+
+uiwait(slice_figure);
+while ~isempty(findobj(slice_figure))
+   pause;
+end
+
+%check that all images have been padded
+procDirFileList=dir(folder_processed_images);
+procDirFileNames={procDirFileList.name};
+userParams.processed_image_names=procDirFileNames(cellfun(@(fName) contains(fName,'_processed.tif'),procDirFileNames));
+userParams.processed_ROI_names=procDirFileNames(cellfun(@(fName) contains(fName,'_processed.csv'),procDirFileNames));
+userParams.reference_size = atlas_reference_size;
+for fileNum=1:length(userParams.processed_image_names)
+    userParams.slice_num=fileNum;
+    PadSlice(userParams,folder_processed_images)
+end
 
 end
