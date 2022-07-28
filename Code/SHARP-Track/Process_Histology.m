@@ -13,7 +13,7 @@
 %   contrast of each channel can be augmented independently
 % ------------------------------------------------------------------------
 
-function Process_Histology(image_folder, coords_folder, image_files_are_individual_slices, microns_per_pixel, plane, downsampled_already)
+function Process_Histology(image_folder, coords_folder, ~, microns_per_pixel, plane, downsampled_already)
 %%  SET PARAMETERS
 
 % name of images, in order anterior to posterior or vice versa
@@ -56,11 +56,6 @@ elseif strcmp(plane,'transverse')
     atlas_reference_size = [1140 1320];
 end
 
-
-
-
-
-
 % finds or creates a folder location for processed images -- 
 % a folder within save_folder called processed
 folder_processed_images = fullfile(save_folder, 'processed');
@@ -82,7 +77,7 @@ close all
 % you to adjust the contrast of each channel
 %
 % Open Histology Viewer figure
-try; figure(histology_figure);
+try figure(histology_figure);
 catch; histology_figure = figure('Name','Histology Viewer'); end
 warning('off', 'images:initSize:adjustingMag'); warning('off', 'MATLAB:colon:nonIntegerIndex');
 
