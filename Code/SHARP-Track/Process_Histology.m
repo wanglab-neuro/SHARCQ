@@ -43,7 +43,7 @@ save_folder = image_folder;
 gain = 1; 
 
 % images are already downsampled to resolution of atlas
-use_already_downsampled_image = downsampled_already;
+use_ds_image = downsampled_already;
 
 % size in pixels of reference atlas brain. For coronal slice, this is 800 x 1140
 if strcmp(plane,'coronal')
@@ -57,7 +57,7 @@ end
 % finds or creates a folder location for processed images -- 
 % a folder within save_folder called processed
 folder_processed_images = fullfile(save_folder, 'processed');
-if ~exist(folder_processed_images)
+if ~exist(folder_processed_images,'dir')
     mkdir(folder_processed_images)
 end
 
@@ -72,19 +72,41 @@ close all
 %
 % if the images are already downsampled (use_already_downsampled_image = true), this will allow
 % you to adjust the contrast of each channel
-%
+
 % Open Histology Viewer figure
-try figure(histology_figure);
-catch; histology_figure = figure('Name','Histology Viewer',  'NumberTitle', 'off', 'color', 'k'); end
+if ~exist('histology_figure','var')
+    histology_figure = figure('Name','Histology Viewer',  'NumberTitle', 'off', 'color', 'k'); 
+end
 warning('off', 'images:initSize:adjustingMag'); warning('off', 'MATLAB:colon:nonIntegerIndex');
 
+userParams = struct(...
+'show_original',0,...
+'adjusting_contrast',0,...
+'file_num',1,...
+'num_files',length(image_file_names),...
+'save_folder',folder_processed_images,...
+'coords_folder',coords_folder,...
+'image_folder',image_folder,...
+'image_file_names',{image_file_names},...
+'coords_file_names',{coords_file_names},...
+'microns_per_pixel',microns_per_pixel,...
+'microns_per_pixel_after_downsampling',microns_per_pixel_after_downsampling,...
+'gain',gain);
+
 % Function to downsample and adjust histology image
-HistologyBrowser(histology_figure, save_folder, image_folder, coords_folder, image_file_names, coords_file_names, folder_processed_images, ...
-            use_already_downsampled_image, microns_per_pixel, microns_per_pixel_after_downsampling, gain)
+HistologyBrowser(histology_figure, userParams, use_ds_image);
 
 uiwait(histology_figure);
 while size(findobj(histology_figure))>0
    pause;
+end
+
+%check that all processed files have been created 
+procFileList=dir(folder_processed_images);
+file2ProcIdx=find(~cellfun(@(fName) any(contains({procFileList.name},fName(1:end-4))) ,image_file_names));
+for fileNum=1:length(file2ProcIdx)
+    userParams.file_num=file2ProcIdx(fileNum);
+    AdjustHistologyImage(userParams,use_ds_image); 
 end
 
 %% GO THROUGH TO FLIP HORIZONTAL SLICE ORIENTATION, ROTATE, SHARPEN, and CHANGE ORDER
@@ -101,6 +123,8 @@ close all
 %
 % note -- presssing left or right arrow saves the modified image, so be
 % sure to do this even after modifying the last slice in the folder
+
 slice_figure = figure('Name','Slice Viewer');
 SliceFlipper(slice_figure, folder_processed_images, atlas_reference_size)
+
 end
