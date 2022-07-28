@@ -20,7 +20,6 @@ function Process_Histology(image_folder, coords_folder, ~, microns_per_pixel, pl
 % once these are downsampled they will be named ['original name' '_processed.tif']
 image_file_names = dir([image_folder filesep '*.tif']); % get the contents of the image_folder
 image_file_names = natsortfiles({image_file_names.name});
-% image_file_names = {'slide no 2_RGB.tif','slide no 3_RGB.tif','slide no 4_RGB.tif'}; % alternatively, list each image in order
 
 % name of coordinate files matching images
 coords_file_names = dir([coords_folder filesep '*.csv']);
@@ -39,7 +38,6 @@ save_folder = image_folder;
 % if the images are cropped (image_file_are_individual_slices = false),
 % name to save cropped slices as; e.g. the third cropped slice from the 2nd
 % image containing many slices will be saved as: save_folder/processed/save_file_name02_003.tif
-save_file_name = 'SS096_';
 
 % increase gain if for some reason the images are not bright enough
 gain = 1; 
@@ -69,7 +67,6 @@ end
 % close all figures
 close all
    
-
 % if the images need to be downsampled to 10um pixels (use_already_downsampled_image = false), 
 % this will downsample and allow you to adjust contrast of each channel of each image from image_file_names
 %
@@ -78,7 +75,7 @@ close all
 %
 % Open Histology Viewer figure
 try figure(histology_figure);
-catch; histology_figure = figure('Name','Histology Viewer'); end
+catch; histology_figure = figure('Name','Histology Viewer',  'NumberTitle', 'off', 'color', 'k'); end
 warning('off', 'images:initSize:adjustingMag'); warning('off', 'MATLAB:colon:nonIntegerIndex');
 
 % Function to downsample and adjust histology image

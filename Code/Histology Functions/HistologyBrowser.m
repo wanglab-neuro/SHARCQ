@@ -19,8 +19,13 @@ ud = struct(...
 ud=AdjustHistologyImage(ud,use_already_downsampled_image);
 
 imshow(ud.original_image);
-title(['Adjusting channel ' num2str(ud.channel) ' on image ' num2str(ud.file_num) ' / ' num2str(ud.num_files)],...
-    'color',[1==ud.channel 2==ud.channel 3==ud.channel])
+figDims=get(gcf, 'position');
+set(gcf,'position',[figDims(1), figDims(2)-200,...
+    min([700 size(ud.original_image,1)*4]), min([500 size(ud.original_image,2)+200])])
+colorLabels={'Red','Green','Blue'};
+title({['Image ' num2str(ud.file_num) ' / ' num2str(ud.num_files)];...
+    ['Adjusting channel ' num2str(ud.channel) ' (' colorLabels{ud.channel} ')']},...
+    'color','w')
 
 set(histology_figure, 'UserData', ud);
 
@@ -108,7 +113,6 @@ else % if pressing commands while adjusting contrast
     disp('If you are dissatisfied with your changes, you can then press ''r'' to revert to the original image')
 end
 
-
 % show the image, unless in other viewing modes
 figure(fig)
 if ~(ud.adjusting_contrast || (strcmpi(keydata.Key,'e')&&ud.show_original) )
@@ -154,7 +158,7 @@ if ~use_ds_image
     % analyze->measure, then the X,Y data will be in the 6th and 7th col
     x = round(ROI_values(:,X)*(sz(1,1)/original_image_size(1,1)));
     y = round(ROI_values(:,Y)*(sz(1,2)/original_image_size(1,2)));
-    
+
     % Create binary ROI matrix 'image' and populate pixels with values if
     % they represent labeled cell locations. If downsampled size causes two
     % cell locations to overlap, move one pixel away until empty space
