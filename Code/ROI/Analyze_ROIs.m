@@ -10,9 +10,9 @@ roi_file = fullfile(image_folder,'processed','ROIs',append('transformed_ROI_',fi
 %file_name = extractBefore(file_name, "_");
 
 % file location of transform and transformed image
-transform_location = fullfile(image_folder,'processed\','transformations\',append(file_name,'_processed_transform_data.mat'));
-transformed_slice_location = fullfile(image_folder,'processed\','transformations\',append(file_name,'_processed_transformed.tif'));
-atlas_overlay_location = fullfile(image_folder,'processed\','transformations\',append(file_name,'_processed_atlas.tif'));
+transform_location = fullfile(image_folder,'processed','transformations',append(file_name,'_processed_transform_data.mat'));
+transformed_slice_location = fullfile(image_folder,'processed','transformations',append(file_name,'_processed_transformed.tif'));
+atlas_overlay_location = fullfile(image_folder,'processed','transformations',append(file_name,'_processed_atlas.tif'));
 
 transformed_slice_image = imread(transformed_slice_location);
 atlas_overlay_image = imread(atlas_overlay_location);
